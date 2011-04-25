@@ -7,7 +7,7 @@
 </head>
 <body>
   <div id="editor_view">
-    <div contenteditable="true" id="divEditor" style="width:20em; height:10em; border:1px solid black; outline:none; overflow-y: auto;" onkeyup="show_auto_suggest(this, event)" onblur="toggle_auto_suggest(this, event)"><div id="divPrompt" style="position:absolute; width:auto; max-height:9em; display:none; border:1px solid black; overflow-y: auto; z-index:1; top:100px; left:100px; color:red; dislay:none">lol</div></div>
+    <div contenteditable="true" id="divEditor" style="width:20em; height:10em; border:1px solid black; outline:none; overflow-y: auto;" onkeyup="show_auto_suggest(this, event)" onblur="toggle_auto_suggest(this, event)"><div id="divPrompt" style="position:absolute; width:auto; max-height:9em; display:none; border:1px solid black; overflow-y: auto; z-index:1; top:100px; left:100px; color:red; dislay:none"></div></div>
   </div>
   <!-- don't use <select> because it does not support img  -->
   <script type="text/javascript"><!--
@@ -24,7 +24,7 @@
         break;
       default:
         //console.info('keyCode is: '+e.keyCode);
-        // @ToDo: Hide divPrompt
+        // @Done: Hide divPrompt
         break;
       case 190:
         spanPos =  spanPos || $('<span>', {id:'spanPos'})[0];
@@ -46,14 +46,16 @@
         }
         
 
-        // @ToDo: -1 should be something more
-        var scope = sel.anchorNode.parentElement.innerText.substring(0, sel. anchorOffset);
+        // @Done: -1 should be something more
+        var scope = sel.anchorNode.parentNode.textContent.substring(0, sel. anchorOffset);
         var keyword;
         // @ToDo: if . is inputed as a string or shit
         // @ToDo: display box only this
+        // @ToDo: something like CreateObject('')
         if(/([a-zA-Z][\w\.]*)\.$/g.exec(scope))
         {
           keyword = RegExp.$1;
+          // This is the context we are going to parse
           console.info(keyword);
 
           // @Done: what if window.document. ?
