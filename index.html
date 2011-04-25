@@ -1,0 +1,138 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+  <title></title>
+  <script type="text/javascript" src="jquery-1.5.2.js" language="javascript"></script>
+</head>
+<body>
+  <div id="editor_view">
+    <div contenteditable="true" id="divEditor" style="width:20em; height:10em; border:1px solid black; outline:none; overflow-y: auto;" onkeyup="show_auto_suggest(this, event)" onblur="toggle_auto_suggest(this, event)"><div id="divPrompt" style="position:absolute; width:auto; max-height:9em; display:none; border:1px solid black; overflow-y: auto; z-index:1; top:100px; left:100px; color:red; dislay:none">lol</div></div>
+  </div>
+  <!-- don't use <select> because it does not support img  -->
+  <script type="text/javascript"><!--
+  var spanPos;
+  $.expr[':'].focus = function( elem ) {
+    return elem === document.activeElement // && ( elem.type || elem.href );
+  };
+  function show_auto_suggest(obj, e)
+  {
+    switch(e.keyCode)
+    {
+      case 13, 9, 27:
+        return;
+        break;
+      default:
+        //console.info('keyCode is: '+e.keyCode);
+        // @ToDo: Hide divPrompt
+        break;
+      case 190:
+        spanPos =  spanPos || $('<span>', {id:'spanPos'})[0];
+        var sel;
+        if(window.getSelection)
+        {
+          sel = window.getSelection()
+          sel.getRangeAt(0).insertNode(spanPos);
+          var p = $(spanPos).position();
+        }
+        else
+        {
+          var r = document.selection.createRange();
+          var p = {'left': r.offsetLeft,
+                   'top': r.offsetTop
+                  }
+          console.info(p['left'])
+          console.info(p['top'])
+        }
+        
+
+        // @ToDo: -1 should be something more
+        var scope = sel.anchorNode.parentElement.innerText.substring(0, sel. anchorOffset);
+        var keyword;
+        // @ToDo: if . is inputed as a string or shit
+        // @ToDo: display box only this
+        if(/([a-zA-Z][\w\.]*)\.$/g.exec(scope))
+        {
+          keyword = RegExp.$1;
+          console.info(keyword);
+
+          // @Done: what if window.document. ?
+          // http://stackoverflow.com/questions/5742420/self-hosted-javascript-editor-using-for-in
+          var keyword_attrs = Object.getOwnPropertyNames(eval(keyword));
+          //show the box
+          $('#divPrompt').blur(
+            function()
+            {
+              if($('#divEditor')[0]!=document.activeElement)
+                this.hide()
+            }
+          ).html(keyword_attrs.join('<br />')).css(
+            { 'left': p['left']+'px',
+              'top': p['top']+'px',
+              'margin-top':'1em',
+              'width': Math.max.apply(this,
+                $.map(keyword_attrs,
+                  function(x){return x.length}
+                )
+              ) + 8 + 'ex'
+            }
+          ).show()
+        }
+        break;
+    }
+  }
+  
+  
+  //http://alexking.org/blog/2003/06/02/inserting-at-the-cursor-using-javascript
+  function insertAtCursor(myField, myValue) {
+  //IE support
+    if (document.selection) {
+      myField.focus();
+      sel = document.selection.createRange();
+      sel.text = myValue;
+    }
+
+    //MOZILLA/NETSCAPE support
+    else if (myField.selectionStart || myField.selectionStart == '0') {
+      var startPos = myField.selectionStart;
+      var endPos = myField.selectionEnd;
+      myField.value = myField.value.substring(0, startPos)
+                    + myValue
+                    + myField.value.substring(endPos, myField.value.length);
+    } else {
+      myField.value += myValue;
+    }
+  }
+
+  //http://www.webdeveloper.com/forum/showpost.php?p=961509&postcount=7
+  function getCaretPosition (ctrl) {
+    var CaretPos = 0;
+    // IE Support
+    if (document.selection) {
+
+      ctrl.focus ();
+      var Sel = document.selection.createRange();
+      var SelLength = document.selection.createRange().text.length;
+      Sel.moveStart ('character', -ctrl.value.length);
+      CaretPos = Sel.text.length - SelLength;
+    }
+    // Firefox support
+    else if (ctrl.selectionStart || ctrl.selectionStart == '0')
+      CaretPos = ctrl.selectionStart;
+
+    return (CaretPos);
+
+  }
+  
+  function toggle_auto_suggest(obj, e)
+  {
+    //http://stackoverflow.com/questions/967096/using-jquery-to-test-if-an-input-has-focus
+    if($('#divEditor')[0]!=document.activeElement)
+    {
+      $('#divPrompt').hide()
+    }
+  }
+    
+  --></script>
+</body>
+</html>
